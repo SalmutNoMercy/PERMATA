@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0D1B3E" />
+  <title>PERMATA — Pemanfaatan Kain Perca Menjadi Aneka Karya | Projek P5</title>
+
+  <!-- Google Fonts: Cinzel untuk aksen Royal Klasik, Plus Jakarta Sans untuk keterbacaan modern -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            royal: {
+              navy: '#0D1B3E',
+              navyDark: '#0B1736',
+              slate: '#1E293B',
+              charcoal: '#1F2937',
+              body: '#334155',
+              ivory: '#F7F3EA',
+              cream: '#EFE8D8',
+              gold: '#C59B27',
+              antiqueGold: '#8A6212',
+              softGoldBg: '#FDF6E3',
+              champagne: '#FCD34D',
+            }
+          },
+          fontFamily: {
+            cinzel: ['Cinzel', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* ==========================================================================
+       HIGH-CONTRAST ROYAL ELEGANT STYLES (ROYAL IVORY & PEARL WHITE)
+       ========================================================================== */
+    :root {
+      --royal-ivory: #F7F3EA;
+      --royal-cream: #EFE8D8;
+      --royal-navy: #0D1B3E;
+      --royal-gold: #C59B27;
+      --antique-gold: #8A6212;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(165deg, #FAF7F0 0%, #F7F3EA 52%, #EFE8D8 100%);
+      color: #1F2937;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+      padding-left: var(--safe-left);
+      padding-right: var(--safe-right);
+    }
+
+    /* Ornamen pola royal ultra-tipis di lapisan belakang agar tidak mengganggu keterbacaan teks */
+    .royal-watermark-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg width='64' height='64' viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%230D1B3E' stroke-width='1.2'%3E%3Cpath d='M32 4L60 32L32 60L4 32Z'/%3E%3Ccircle cx='32' cy='32' r='6'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 64px 64px;
+    }
+
+    /* Kartu Putih Mutiara Solid dengan Border Royal Gold & Bayangan Lembut */
+    .pearl-card {
+      background-color: #FFFFFF;
+      border: 1.5px solid rgba(197, 155, 39, 0.45);
+      box-shadow:
+        0 14px 34px -10px rgba(13, 27, 62, 0.08),
+        0 4px 12px -2px rgba(197, 155, 39, 0.10);
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                  border-color 0.35s ease,
+                  box-shadow 0.35s ease;
+    }
+
+    /* Interaksi khusus untuk 3 tombol pilihan karya */
+    .product-btn-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .product-btn-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px rgba(197, 155, 39, 0);
+      transition: box-shadow 0.35s ease;
+      pointer-events: none;
+    }
+
+    .product-btn-card:hover,
+    .product-btn-card:focus-visible {
+      transform: translateY(-6px);
+      border-color: #C59B27;
+      box-shadow:
+        0 22px 44px -12px rgba(13, 27, 62, 0.15),
+        0 8px 20px -4px rgba(197, 155, 39, 0.22);
+    }
+
+    .product-btn-card:hover::after,
+    .product-btn-card:focus-visible::after {
+      box-shadow: inset 0 0 0 1.5px rgba(197, 155, 39, 0.65);
+    }
+
+    .product-btn-card:active {
+      transform: translateY(-2px) scale(0.992);
+    }
+
+    /* Animasi transisi antar-halaman (SPA View) */
+    .view-transition {
+      animation: royalFadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes royalFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Animasi cincin berputar pada layar loading */
+    .loader-ring {
+      animation: spinSlow 10s linear infinite;
+    }
+
+    .loader-ring-reverse {
+      animation: spinReverse 7s linear infinite;
+    }
+
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes spinReverse {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    /* Equalizer animasi pada tombol musik */
+    .eq-bar {
+      width: 3px;
+      background-color: #FCD34D;
+      border-radius: 999px;
+      transition: height 0.2s ease;
+    }
+
+    .eq-playing .eq-bar:nth-child(1) { animation: eqBounce 0.7s ease-in-out infinite alternate; }
+    .eq-playing .eq-bar:nth-child(2) { animation: eqBounce 0.5s ease-in-out 0.15s infinite alternate; }
+    .eq-playing .eq-bar:nth-child(3) { animation: eqBounce 0.8s ease-in-out 0.3s infinite alternate; }
+    .eq-playing .eq-bar:nth-child(4) { animation: eqBounce 0.6s ease-in-out 0.1s infinite alternate; }
+
+    @keyframes eqBounce {
+      0% { height: 4px; }
+      100% { height: 15px; }
+    }
+
+    /* Custom Scrollbar bernuansa Royal Ivory & Navy */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #EFE8D8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #C59B27;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #8A6212;
+    }
+  </style>
+</head>
+
+<body class="relative selection:bg-royal-navy selection:text-white">
+
+  <!-- Ornamen Pola Royal Ultra-Tipis di Lapisan Paling Belakang -->
+  <div class="royal-watermark-layer" aria-hidden="true"></div>
+
+  <!-- Pendaran cahaya hangat lembut di sudut atas layar -->
+  <div class="pointer-events-none fixed inset-x-0 top-0 z-0 h-80 bg-gradient-to-b from-[#EFE5CF]/70 to-transparent" aria-hidden="true"></div>
+
+  <!-- ========================================================================
+       ELEMEN AUDIO BACKSOUND
+       Sumber file diatur melalui konstanta BACKSOUND_FILE pada bagian JavaScript
+       ======================================================================== -->
+  <audio id="bg-music" src="backsound.mp3" loop preload="auto" autoplay playsinline></audio>
+
+  <!-- ========================================================================
+       1. LAYAR LOADING PEMBUKA (DEEP ROYAL NAVY #0B1736 & CHAMPAGNE GOLD)
+       ======================================================================== -->
+  <div id="loading-screen"
+       class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0B1736] px-6 text-center transition-opacity duration-700 ease-out"
+       aria-live="polite">
+
+    <!-- Pendaran halus di belakang emblem -->
+    <div class="pointer-events-none absolute h-72 w-72 rounded-full bg-[#C59B27]/15 blur-3xl"></div>
+
+    <!-- Emblem Mahkota & Berlian PERMATA -->
+    <div class="relative mb-7 flex h-32 w-32 items-center justify-center">
+      <svg class="loader-ring absolute inset-0 h-full w-full text-[#FCD34D]/55" viewBox="0 0 120 120" fill="none">
+        <circle cx="60" cy="60" r="54" stroke="currentColor" stroke-width="1.2" stroke-dasharray="6 6" />
+        <circle cx="60" cy="60" r="46" stroke="currentColor" stroke-width="0.9" />
+      </svg>
+      <svg class="loader-ring-reverse absolute inset-3 h-[104px] w-[104px] text-[#FCD34D]/75" viewBox="0 0 100 100" fill="none">
+        <polygon points="50,4 96,50 50,96 4,50" stroke="currentColor" stroke-width="1.2" />
+      </svg>
+      <div class="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-[#FCD34D]/60 bg-[#0D1B3E] shadow-xl">
+        <svg class="h-9 w-9 text-[#FCD34D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 17L4.5 7L9.5 11.5L12 5L14.5 11.5L19.5 7L22 17H2Z" />
+          <path d="M3 20H21" />
+          <circle cx="12" cy="14" r="1.3" fill="currentColor" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Teks Layar Loading (Putih Terang & Champagne Gold agar 100% Kontras) -->
+    <p class="mb-2 font-cinzel text-xs font-semibold tracking-[0.3em] text-[#FCD34D] uppercase">
+      Projek Penguatan Profil Pelajar Pancasila
+    </p>
+    <h1 class="font-cinzel text-4xl font-extrabold tracking-[0.18em] text-white sm:text-5xl">
+      PERMATA
+    </h1>
+    <p class="mt-2.5 max-w-md text-sm font-medium text-slate-200 sm:text-base">
+      Pemanfaatan Kain Perca Menjadi Aneka Karya
+    </p>
+
+    <!-- Progress Bar -->
+    <div class="mt-8 w-full max-w-xs sm:max-w-sm">
+      <div class="mb-2 flex items-center justify-between text-xs font-medium text-white">
+        <span id="loading-status">Menyiapkan Galeri Karya...</span>
+        <span id="loading-percent" class="font-bold tabular-nums text-[#FCD34D]">0%</span>
+      </div>
+      <div class="h-2.5 w-full overflow-hidden rounded-full border border-[#FCD34D]/40 bg-[#071026] p-0.5">
+        <div id="loading-bar"
+             class="h-full w-0 rounded-full bg-gradient-to-r from-[#C59B27] to-[#FCD34D] transition-all duration-100 ease-out">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       TOMBOL KONTROL AUDIO BACKSOUND MELAYANG (POJOK KANAN ATAS)
+       Latar Deep Royal Navy dengan teks Putih & Champagne Gold agar selalu kontras
+       ======================================================================== -->
+  <div class="fixed right-4 top-4 z-40 sm:right-6 sm:top-6" style="margin-top: var(--safe-top);">
+    <button id="audio-toggle-btn"
+            type="button"
+            aria-label="Putar atau Jeda Musik Latar"
+            class="group flex min-h-[46px] items-center gap-2.5 rounded-full border border-[#C59B27] bg-[#0D1B3E] px-4 py-2 text-xs font-semibold text-white shadow-lg transition-all hover:bg-[#152857] focus:outline-none focus:ring-2 focus:ring-[#C59B27]">
+      <span id="audio-eq" class="flex h-4 items-end gap-[2.5px]" aria-hidden="true">
+        <span class="eq-bar h-2"></span>
+        <span class="eq-bar h-3.5"></span>
+        <span class="eq-bar h-2.5"></span>
+        <span class="eq-bar h-3"></span>
+      </span>
+      <span id="audio-label" class="tracking-wide text-[#FCD34D]">Musik: Otomatis</span>
+    </button>
+  </div>
+
+  <!-- Toast Notifikasi Ringan (Pengganti alert) -->
+  <div id="royal-toast"
+       class="pointer-events-none fixed bottom-6 left-1/2 z-40 -translate-x-1/2 translate-y-4 opacity-0 transition-all duration-300"
+       style="margin-bottom: var(--safe-bottom);">
+    <div class="rounded-full border border-[#C59B27] bg-[#0D1B3E] px-5 py-2.5 text-center text-xs font-semibold text-white shadow-2xl">
+      <span id="royal-toast-text">Selamat datang di Galeri Karya PERMATA</span>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       KONTENER UTAMA APLIKASI
+       ======================================================================== -->
+  <main id="app-container" class="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col justify-between px-4 py-12 sm:px-6 lg:px-8">
+
+    <!-- ======================================================================
+         2. HALAMAN MENU UTAMA (PILIHAN 3 KARYA & TEAM 4)
+         ====================================================================== -->
+    <section id="home-view" class="view-transition flex flex-col gap-10 pt-8 sm:gap-12 sm:pt-10">
+
+      <!-- HEADER ROYAL ELEGANT (KONTRAS TINGGI DI ATAS ROYAL IVORY) -->
+      <header class="mx-auto max-w-3xl text-center">
+        <!-- Badge Projek P5 -->
+        <div class="mb-4 inline-flex items-center gap-2 rounded-full border border-[#E6C875] bg-[#FDF6E3] px-4 py-1.5 shadow-sm">
+          <span class="h-2 w-2 rounded-full bg-[#C59B27]"></span>
+          <span class="font-cinzel text-[11px] font-bold tracking-[0.22em] text-[#8A6212] uppercase sm:text-xs">
+            Projek P5 • Inovasi Ramah Lingkungan
+          </span>
+          <span class="h-2 w-2 rounded-full bg-[#C59B27]"></span>
+        </div>
+
+        <!-- Judul Utama Deep Royal Navy -->
+        <h1 class="font-cinzel text-4xl font-extrabold tracking-[0.14em] text-[#0D1B3E] sm:text-6xl">
+          PERMATA
+        </h1>
+
+        <!-- Subjudul Dark Slate -->
+        <p class="mt-2.5 text-lg font-bold text-[#1E293B] sm:text-2xl">
+          Pemanfaatan Kain Perca Menjadi Aneka Karya
+        </p>
+
+        <!-- Ornamen Garis Pemisah Royal Gold -->
+        <div class="my-5 flex items-center justify-center gap-3" aria-hidden="true">
+          <span class="h-[2px] w-16 rounded-full bg-gradient-to-r from-transparent to-[#C59B27] sm:w-24"></span>
+          <svg class="h-4 w-4 text-[#C59B27]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L15.5 8.5L22 12L15.5 15.5L12 22L8.5 15.5L2 12L8.5 8.5L12 2Z" />
+          </svg>
+          <span class="h-[2px] w-16 rounded-full bg-gradient-to-l from-transparent to-[#C59B27] sm:w-24"></span>
+        </div>
+
+        <!-- Deskripsi Pengantar Charcoal Gelap -->
+        <p class="mx-auto max-w-2xl text-sm leading-relaxed font-medium text-[#334155] sm:text-base">
+          Mengubah sisa potongan kain perca menjadi karya fungsional, bernilai estetika tinggi, dan berkelanjutan. Pilih salah satu karya di bawah ini untuk melihat informasi produk, bahan dan alat, proses pembuatan, serta keunikannya.
+        </p>
+      </header>
+
+      <!-- 3 TOMBOL / KARTU PILIHAN KARYA -->
+      <section aria-labelledby="karya-heading">
+        <h2 id="karya-heading" class="sr-only">Pilihan Karya Projek P5 PERMATA</h2>
+
+        <div id="product-buttons-grid" class="grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
+          <!-- 3 Kartu Tombol Produk dirender oleh JavaScript -->
+        </div>
+      </section>
+
+      <!-- SECTION TEAM 4 (TATA LETAK SIMETRIS: 4 ATAS, 3 TERPUSAT DI BAWAH PADA DESKTOP) -->
+      <section aria-labelledby="team-heading" class="mt-2">
+        <div class="pearl-card relative overflow-hidden rounded-3xl px-5 py-8 sm:px-10 sm:py-10">
+          <!-- Garis aksen emas tipis di puncak kartu -->
+          <div class="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#0D1B3E] via-[#C59B27] to-[#0D1B3E]"></div>
+
+          <div class="text-center">
+            <span class="font-cinzel text-xs font-bold tracking-[0.26em] text-[#8A6212] uppercase">
+              Tim Kreator Karya P5
+            </span>
+            <h2 id="team-heading" class="mt-1.5 font-cinzel text-2xl font-extrabold text-[#0D1B3E] sm:text-3xl">
+              Team 4
+            </h2>
+            <p class="mx-auto mt-2 max-w-xl text-xs font-medium text-[#334155] sm:text-sm">
+              Kolaborasi kreatif anggota kelompok dalam merancang, mengolah, dan mewujudkan karya daur ulang kain perca PERMATA.
+            </p>
+          </div>
+
+          <!-- Grid/Flex Terpusat agar 7 anggota tersusun simetris (4 di atas, 3 terpusat di bawah pada desktop) -->
+          <div id="team-members-list" class="mx-auto mt-7 flex max-w-5xl flex-wrap items-stretch justify-center gap-3 sm:gap-4">
+            <!-- 7 Anggota Team 4 dirender oleh JavaScript -->
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ======================================================================
+         3. HALAMAN DETAIL INFORMASI PRODUK (SPA VIEW)
+         ====================================================================== -->
+    <section id="detail-view" class="hidden flex-col gap-7 pt-8 sm:gap-8 sm:pt-10" aria-live="polite">
+      <!-- Konten detail produk yang dipilih dirender oleh JavaScript -->
+    </section>
+
+    <!-- ======================================================================
+         FOOTER ROYAL ELEGANT (KONTRAS TINGGI)
+         ====================================================================== -->
+    <footer class="mt-14 border-t border-[#C59B27]/40 pt-6 text-center">
+      <p class="font-cinzel text-xs font-bold tracking-[0.2em] text-[#0D1B3E]">
+        PERMATA • PROJEK P5 • TEAM 4
+      </p>
+      <p class="mt-1.5 text-xs font-medium text-[#334155]">
+        Pemanfaatan Kain Perca Menjadi Aneka Karya — Kreativitas Berkelanjutan &amp; Bernilai Guna
+      </p>
+    </footer>
+
+  </main>
+
+  <!-- ========================================================================
+       JAVASCRIPT MURNI (VANILLA JAVASCRIPT) — LOGIKA, DATA, AUDIO & QR ROUTING
+       ======================================================================== -->
+  <script>
+    /**
+     * ==========================================================================
+     * KONFIGURASI ASET MEDIA (SILAKAN SESUAIKAN NAMA FILE JIKA DIPERLUKAN)
+     * ==========================================================================
+     * 1. Letakkan file musik latar di folder yang sama dengan file HTML ini
+     *    dengan nama "backsound.mp3".
+     * 2. Letakkan ke-3 foto karya Anda di folder yang sama dengan nama:
+     *    - "foto-bandana.jpg"
+     *    - "foto-tatakan-gelas.jpg"
+     *    - "foto-gantungan-bintang.jpg"
+     */
+    const BACKSOUND_FILE = "backsound.mp3";
+
+    const PHOTO_FILES = {
+      bandana: "foto-bandana.jpg",
+      tatakanGelas: "foto-tatakan-gelas.jpg",
+      gantunganBintang: "foto-gantungan-bintang.jpg"
+    };
+
+    /**
+     * ==========================================================================
+     * DATA ANGGOTA TEAM 4
+     * ==========================================================================
+     */
+    const TEAM_4_MEMBERS = [
+      "Salva Nayla",
+      "Mutiara Amanda",
+      "Assifa Kirania",
+      "Rifki Dhirgantara Ardiansyah",
+      "Surya Putra",
+      "M. Reihan Ardana",
+      "Angga Dwi Saputra"
+    ];
+
+    /**
+     * ==========================================================================
+     * DATA LENGKAP 3 KARYA PROJEK P5 PERMATA
+     * ==========================================================================
+     */
+    const PRODUCTS_DATA = [
+      {
+        id: "bandana",
+        number: "01",
+        theme: "Tema 1: Fashion dan Aksesoris",
+        name: "Bandana",
+        tagline: "Aksesoris rambut bergaya anggun dari perpaduan motif kain perca pilihan.",
+        photoFile: PHOTO_FILES.bandana,
+        highlights: ["Nyaman Dipakai", "Elastis & Fleksibel", "Motif Eksklusif"],
+        infoProduk: {
+          ringkasan:
+            "Bandana merupakan aksesoris fesyen kepala yang dirancang dengan menggabungkan potongan-potongan kain perca bermotif dan polos menjadi satu kesatuan yang harmonis. Produk ini hadir sebagai solusi kreatif untuk menyulap sisa kain konveksi menjadi pelengkap gaya sehari-hari yang modis, rapi, dan nyaman digunakan.",
+          konsep:
+            "Mengusung konsep padu padan warna dan motif (patchwork) yang lembut serta rapi, sehingga memberikan tampilan elegan saat dikenakan untuk aktivitas belajar, bersantai, maupun kegiatan kasual."
+        },
+        bahanDanAlat: {
+          bahan: [
+            "Kain perca katun / rayon pilihan berbagai motif & warna senada",
+            "Karet elastis (elastic band) lebar ± 1,5 – 2 cm untuk bagian belakang",
+            "Benang jahit yang warnanya disesuaikan dengan kain perca",
+            "Kain pelapis dalam (interfacing tipis) agar bentuk bandana lebih rapi"
+          ],
+          alat: [
+            "Gunting kain tajam & gunting benang",
+            "Jarum jahit tangan dan/atau mesin jahit",
+            "Penggaris pola dan kapur jahit",
+            "Jarum pentul & peniti (untuk memasukkan karet elastis)",
+            "Setrika untuk merapikan lipatan kampuh kain"
+          ]
+        },
+        prosesPembuatan: [
+          "Memilih dan membersihkan kain perca yang masih berkualitas baik, lalu menyetrikanya agar permukaan kain rata dan mudah dipola.",
+          "Mengukur dan memotong kain perca menjadi dua bagian utama: badan bandana (± 45 cm × 12 cm) dan selongsong karet belakang (± 18 cm × 6 cm).",
+          "Menyambung potongan motif kain perca secara serasi, lalu melipat kain memanjang dengan sisi motif di dalam dan menjahit tepi memanjangnya.",
+          "Membalik kain yang telah dijahit sehingga sisi motif berada di luar, kemudian menyetrikanya hingga membentuk pita bandana yang pipih dan rapi.",
+          "Memasukkan karet elastis ke dalam selongsong belakang menggunakan peniti, lalu menyatukan kedua ujung badan bandana dengan bagian karet secara kuat.",
+          "Melakukan pemeriksaan akhir (finishing) pada kerapian jahitan dan membersihkan sisa benang sebelum bandana siap digunakan."
+        ],
+        fungsiDanKeunikan: {
+          fungsi:
+            "Berfungsi untuk menahan rambut agar tetap rapi saat beraktivitas, menyerap keringat ringan di area dahi, sekaligus mempercantik penampilan sebagai aksesoris fesyen harian.",
+          keunikan:
+            "Setiap helai Bandana memiliki susunan kombinasi motif kain perca yang berbeda satu sama lain (unik dan tidak pasaran). Selain mengurangi limbah tekstil, bahannya lembut di kulit kepala dan elastis sehingga nyaman dipakai dalam waktu lama."
+        }
+      },
+      {
+        id: "tatakan-gelas",
+        number: "02",
+        theme: "Tema 2: Dekorasi Rumah",
+        name: "Tatakan Gelas",
+        tagline: "Sentuhan hangat dan artistik di atas meja melalui seni jahit sambung kain perca.",
+        photoFile: PHOTO_FILES.tatakanGelas,
+        highlights: ["Tahan Panas & Lembap", "Dapat Dicuci Ulang", "Estetika Meja"],
+        infoProduk: {
+          ringkasan:
+            "Tatakan Gelas (Patchwork Coaster) adalah perlengkapan dekorasi meja makan maupun meja belajar yang dibuat dari susunan geometris kain perca berlapis. Karya ini memadukan fungsi perlindungan permukaan meja dengan nilai seni kriya tekstil yang memperindah suasana ruangan.",
+          konsep:
+            "Dirancang dengan teknik jahit sambung berlapis kain flanel atau busa tipis di bagian tengah sehingga empuk, stabil saat menopang gelas maupun cangkir hangat, serta menghadirkan nuansa rumah yang rapi dan elegan."
+        },
+        bahanDanAlat: {
+          bahan: [
+            "Potongan kain perca katun bermotif klasik, kotak-kotak, atau floral",
+            "Kain perca polos untuk lapisan bagian bawah (backing)",
+            "Lapisan tengah peredam panas (kain flanel / busa tipis / perca tebal)",
+            "Benang jahit katun kuat dan pita bisban untuk tepian (opsional)"
+          ],
+          alat: [
+            "Gunting kain dan penggaris",
+            "Pola cetakan berbentuk persegi (11 × 11 cm) atau lingkaran (diameter 11 cm)",
+            "Jarum jahit, mesin jahit, dan jarum pentul",
+            "Kapur jahit atau pensil pola",
+            "Setrika untuk mengepres lapisan kain agar rata"
+          ]
+        },
+        prosesPembuatan: [
+          "Menyortir potongan kain perca berdasarkan ketebalan dan keserasian warna, lalu memotongnya menjadi bentuk potongan persegi atau strip kecil.",
+          "Menjahit sambung potongan kain perca tersebut hingga membentuk lembaran motif utama seukuran pola tatakan gelas (± 11 cm × 11 cm).",
+          "Memotong lapisan tengah (kain flanel/busa tipis) dan kain lapisan bawah dengan ukuran yang sama persis dengan lembar motif utama.",
+          "Menumpuk ketiga lapisan (lapisan bawah, lapisan tengah, dan motif utama) lalu menyematkan jarum pentul agar tidak bergeser saat dijahit.",
+          "Menjahit keliling tepian tatakan gelas dengan rapi serta menambahkan jahitan tindas (quilting) di bagian tengah agar lapisan menyatu kokoh.",
+          "Merapikan bagian pinggir dengan teknik balik kain atau list bisban, lalu menyetrika tatakan gelas hingga rata sempurna."
+        ],
+        fungsiDanKeunikan: {
+          fungsi:
+            "Melindungi permukaan meja kayu, kaca, maupun meja belajar dari bekas embun air dingin serta panas dari cangkir teh atau kopi, sekaligus menjadi elemen dekorasi meja yang menawan.",
+          keunikan:
+            "Memiliki daya serap air yang baik dibandingkan tatakan berbahan plastik, dapat dicuci dan digunakan berulang kali, serta menampilkan pola mozaik kain perca yang artistik sehingga memberi karakter hangat pada ruangan."
+        }
+      },
+      {
+        id: "gantungan-bintang",
+        number: "03",
+        theme: "Tema 3: Mainan dan Boneka",
+        name: "Gantungan Kunci Bintang",
+        tagline: "Miniatur boneka bintang empuk penuh warna sebagai teman setia tas dan kunci Anda.",
+        photoFile: PHOTO_FILES.gantunganBintang,
+        highlights: ["Empuk & Ringan", "Jahitan Tangan Rapi", "Aksesoris Tas & Kunci"],
+        infoProduk: {
+          ringkasan:
+            "Gantungan Kunci Bintang adalah kreasi kerajinan tangan berbentuk boneka mini bintang lima sudut yang diisi dakron lembut dan dibalut kain perca pilihan. Karya ini menghadirkan keceriaan dan karakter unik sebagai penanda kunci maupun hiasan gantung pada tas sekolah dan dompet.",
+          konsep:
+            "Mengadaptasi teknik pembuatan boneka mini (plush charm) berukuran ringkas yang ringan dibawa ke mana saja, memadukan potongan kain perca cerah dengan detail jahitan tepi yang rapi."
+        },
+        bahanDanAlat: {
+          bahan: [
+            "Kain perca katun / flanel bermotif ceria dan bertekstur lembut",
+            "Dakron atau kapas sintetis secukupnya sebagai isian boneka bintang",
+            "Ring gantungan kunci logam beserta rantai kecilnya",
+            "Pita kecil atau tali kur (ukuran ± 6 cm) sebagai pengait ring",
+            "Benang jahit atau benang sulam untuk jahitan tepi & aksen hiasan"
+          ],
+          alat: [
+            "Kertas karton untuk membuat mal/pola gambar bintang simetris",
+            "Gunting kain dan gunting kertas",
+            "Jarum jahit tangan dan jarum pentul",
+            "Pensil / kapur jahit untuk menjiplak pola bintang pada kain",
+            "Alat bantu pendorong dakron (seperti sumpit kayu atau ujung pensil tumpul)"
+          ]
+        },
+        prosesPembuatan: [
+          "Menggambar pola bintang lima sudut pada kertas karton dengan ukuran tinggi ± 8–9 cm, lalu mengguntingnya sebagai cetakan pola.",
+          "Menjiplak pola bintang tersebut ke atas dua lembar kain perca, kemudian mengguntingnya dengan menyisakan sedikit ruang untuk kampuh jahitan.",
+          "Menyiapkan pita pengait yang sudah dimasukkan ke ring gantungan kunci, lalu menyelipkannya di bagian puncak atas di antara dua potongan kain bintang.",
+          "Menjahit keliling sisi pola bintang menggunakan tusuk feston atau jahit balik yang rapi, sambil menyisakan celah terbuka sekitar 2–3 cm pada salah satu sisi.",
+          "Memasukkan isian dakron sedikit demi sedikit ke dalam ruang bintang hingga ke kelima ujung sudutnya menggunakan alat pendorong agar tampak padat dan simetris.",
+          "Menutup celah bukaan dengan jahitan rapat yang tersembunyi, lalu menambahkan hiasan kancing kecil atau pita mungil sebagai pemanis akhir."
+        ],
+        fungsiDanKeunikan: {
+          fungsi:
+            "Memudahkan pemilik menemukan kunci di dalam tas, menjadi penanda identitas tas sekolah atau tempat pensil agar tidak tertukar, serta berfungsi sebagai gantungan boneka mini yang menarik.",
+          keunikan:
+            "Bentuk bintang tiga dimensi yang empuk, ringan, dan tidak menggores permukaan barang lain di dalam tas. Perpaduan motif kain perca menjadikan setiap gantungan kunci memiliki tampilan ceria dan penuh nilai ketekunan tangan."
+        }
+      }
+    ];
+
+    /**
+     * ==========================================================================
+     * INISIALISASI STATE & REFERENSI DOM
+     * ==========================================================================
+     */
+    const state = {
+      currentView: "home",
+      activeProductId: null,
+      isPlayingAudio: false,
+      audioInitialized: false,
+      userPausedAudio: false
+    };
+
+    const dom = {
+      bgMusic: document.getElementById("bg-music"),
+      audioToggleBtn: document.getElementById("audio-toggle-btn"),
+      audioEq: document.getElementById("audio-eq"),
+      audioLabel: document.getElementById("audio-label"),
+      loadingScreen: document.getElementById("loading-screen"),
+      loadingBar: document.getElementById("loading-bar"),
+      loadingPercent: document.getElementById("loading-percent"),
+      loadingStatus: document.getElementById("loading-status"),
+      productButtonsGrid: document.getElementById("product-buttons-grid"),
+      teamMembersList: document.getElementById("team-members-list"),
+      homeView: document.getElementById("home-view"),
+      detailView: document.getElementById("detail-view"),
+      royalToast: document.getElementById("royal-toast"),
+      royalToastText: document.getElementById("royal-toast-text")
+    };
+
+    /**
+     * ==========================================================================
+     * HELPER NOTIFIKASI TOAST, FALLBACK SVG & DEEP LINKING QR CODE
+     * ==========================================================================
+     */
+    let toastTimer = null;
+
+    function showToast(message) {
+      if (!dom.royalToast || !dom.royalToastText) return;
+      dom.royalToastText.textContent = message;
+      dom.royalToast.classList.remove("opacity-0", "translate-y-4");
+      dom.royalToast.classList.add("opacity-100", "translate-y-0");
+
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        dom.royalToast.classList.remove("opacity-100", "translate-y-0");
+        dom.royalToast.classList.add("opacity-0", "translate-y-4");
+      }, 3200);
+    }
+
+    function getRoyalFallbackSvg(product) {
+      let iconSvg = "";
+
+      if (product.id === "bandana") {
+        iconSvg = `
+          <svg class="h-14 w-14 text-[#0D1B3E]" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 34C12 20 21 12 32 12C43 12 52 20 52 34" />
+            <path d="M16 34C18 24 24 19 32 19C40 19 46 24 48 34" stroke="#C59B27" />
+            <path d="M27 14L32 19L37 14L35 10L32 13L29 10L27 14Z" fill="#C59B27" stroke="#8A6212" />
+            <path d="M12 34C12 42 18 48 26 50H38C46 48 52 42 52 34" stroke-dasharray="3 3" />
+          </svg>
+        `;
+      } else if (product.id === "tatakan-gelas") {
+        iconSvg = `
+          <svg class="h-14 w-14 text-[#0D1B3E]" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="12" y="38" width="40" height="12" rx="4" fill="#FDF6E3" stroke="#C59B27" />
+            <path d="M20 18H40V32C40 35.3 37.3 38 34 38H26C22.7 38 20 35.3 20 32V18Z" fill="#FFFFFF" />
+            <path d="M40 21H44C46.2 21 48 22.8 48 25C48 27.2 46.2 29 44 29H40" />
+            <path d="M26 11V14M30 10V14M34 11V14" stroke="#C59B27" />
+          </svg>
+        `;
+      } else {
+        iconSvg = `
+          <svg class="h-14 w-14 text-[#0D1B3E]" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="32" cy="12" r="5" stroke="#C59B27" />
+            <path d="M32 17V22" stroke="#C59B27" />
+            <polygon points="32,22 36.6,31.4 47,32.9 39.5,40.2 41.3,50.5 32,45.6 22.7,50.5 24.5,40.2 17,32.9 27.4,31.4" fill="#FDF6E3" stroke="#0D1B3E" />
+            <circle cx="32" cy="36" r="2.2" fill="#C59B27" stroke="none" />
+          </svg>
+        `;
+      }
+
+      return `
+        <div class="hidden h-full w-full flex-col items-center justify-center bg-gradient-to-br from-[#FAF7F0] via-[#FDF6E3] to-[#EFE8D8] p-4 text-center">
+          <div class="mb-2 flex h-20 w-20 items-center justify-center rounded-2xl border border-[#E6C875] bg-white shadow-sm">
+            ${iconSvg}
+          </div>
+          <p class="font-cinzel text-xs font-extrabold tracking-wider text-[#0D1B3E] uppercase">${product.name}</p>
+          <p class="mt-1 text-[11px] font-medium text-[#8A6212]">Siap diisi foto: ${product.photoFile}</p>
+        </div>
+      `;
+    }
+
+    function getDeepLinkedProductId() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const queryProduct = (params.get("karya") || params.get("product") || "").toLowerCase().trim();
+        const hashProduct = window.location.hash.replace(/^#/, "").toLowerCase().trim();
+        const candidate = queryProduct || hashProduct;
+
+        if (!candidate) return null;
+        const found = PRODUCTS_DATA.find((item) => item.id === candidate);
+        return found ? found.id : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function syncUrlWithProduct(productId) {
+      try {
+        const nextHash = `#${productId}`;
+        if (window.location.hash !== nextHash) {
+          window.history.replaceState(null, "", nextHash);
+        }
+      } catch (err) {
+        // Abaikan jika environment preview membatasi history API
+      }
+    }
+
+    function clearUrlProduct() {
+      try {
+        if (window.location.hash || window.location.search) {
+          const cleanUrl = window.location.pathname;
+          window.history.replaceState(null, "", cleanUrl);
+        }
+      } catch (err) {
+        // Abaikan jika environment preview membatasi history API
+      }
+    }
+
+    function copyProductQrLink(productId) {
+      const baseUrl = window.location.href.split("#")[0].split("?")[0];
+      const qrLink = `${baseUrl}#${productId}`;
+
+      try {
+        const tempInput = document.createElement("textarea");
+        tempInput.value = qrLink;
+        tempInput.setAttribute("readonly", "");
+        tempInput.style.position = "fixed";
+        tempInput.style.opacity = "0";
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        tempInput.setSelectionRange(0, tempInput.value.length);
+        const copied = document.execCommand("copy");
+        document.body.removeChild(tempInput);
+
+        if (copied) {
+          showToast(`Link QR disalin: #${productId}`);
+        } else {
+          showToast(`Gunakan akhiran #${productId} pada URL untuk QR Code`);
+        }
+      } catch (err) {
+        showToast(`Gunakan akhiran #${productId} pada URL untuk QR Code`);
+      }
+    }
+
+    /**
+     * ==========================================================================
+     * MANAJEMEN AUDIO BACKSOUND OTOMATIS (DESKTOP, ANDROID & iOS SAFARI)
+     * ==========================================================================
+     */
+    let unlockListenersAttached = false;
+
+    function removeUnlockListeners() {
+      if (!unlockListenersAttached) return;
+      unlockListenersAttached = false;
+      document.removeEventListener("pointerdown", handleAutoUnlockAudio);
+      document.removeEventListener("touchstart", handleAutoUnlockAudio);
+      document.removeEventListener("touchend", handleAutoUnlockAudio);
+      document.removeEventListener("click", handleAutoUnlockAudio);
+      document.removeEventListener("keydown", handleAutoUnlockAudio);
+      window.removeEventListener("scroll", handleAutoUnlockAudio);
+    }
+
+    function handleAutoUnlockAudio() {
+      if (!state.isPlayingAudio && !state.userPausedAudio) {
+        attemptPlayBacksound(false);
+      }
+    }
+
+    function setupBacksound() {
+      try {
+        dom.bgMusic.src = BACKSOUND_FILE;
+        dom.bgMusic.volume = 0.45;
+      } catch (err) {
+        console.warn("Konfigurasi audio:", err);
+      }
+
+      // Sinkronkan tampilan tombol musik dengan status asli pemutar audio
+      dom.bgMusic.addEventListener("play", () => {
+        state.audioInitialized = true;
+        updateAudioUI(true);
+        removeUnlockListeners();
+      });
+
+      dom.bgMusic.addEventListener("pause", () => {
+        updateAudioUI(false);
+      });
+
+      // Segera putar otomatis begitu file MP3 selesai dimuat oleh browser
+      dom.bgMusic.addEventListener("canplay", () => {
+        if (!state.isPlayingAudio && !state.userPausedAudio) {
+          attemptPlayBacksound(false);
+        }
+      });
+
+      dom.audioToggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleBacksound();
+      });
+
+      // Jika browser mobile (iOS Safari / Android Chrome) menahan autoplay awal,
+      // musik akan langsung menyala begitu layar disentuh, diklik, atau digulirkan di mana saja
+      unlockListenersAttached = true;
+      document.addEventListener("pointerdown", handleAutoUnlockAudio, { passive: true });
+      document.addEventListener("touchstart", handleAutoUnlockAudio, { passive: true });
+      document.addEventListener("touchend", handleAutoUnlockAudio, { passive: true });
+      document.addEventListener("click", handleAutoUnlockAudio, { passive: true });
+      document.addEventListener("keydown", handleAutoUnlockAudio, { passive: true });
+      window.addEventListener("scroll", handleAutoUnlockAudio, { passive: true });
+
+      // Percobaan autoplay langsung saat halaman pertama kali dibuka
+      attemptPlayBacksound(false);
+    }
+
+    function updateAudioUI(playing) {
+      state.isPlayingAudio = playing;
+      if (playing) {
+        dom.audioEq.classList.add("eq-playing");
+        dom.audioLabel.textContent = "Musik: Aktif";
+      } else {
+        dom.audioEq.classList.remove("eq-playing");
+        dom.audioLabel.textContent = state.userPausedAudio ? "Musik: Dijeda" : "Musik: Otomatis";
+      }
+    }
+
+    function attemptPlayBacksound(fromManualButton = false) {
+      if (state.userPausedAudio && !fromManualButton) return;
+
+      try {
+        const playPromise = dom.bgMusic.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              state.audioInitialized = true;
+              updateAudioUI(true);
+              removeUnlockListeners();
+            })
+            .catch(() => {
+              updateAudioUI(false);
+              if (fromManualButton) {
+                showToast(`Pastikan file "${BACKSOUND_FILE}" tersedia di folder website.`);
+              }
+            });
+        }
+      } catch (error) {
+        updateAudioUI(false);
+      }
+    }
+
+    function toggleBacksound() {
+      if (state.isPlayingAudio) {
+        state.userPausedAudio = true;
+        dom.bgMusic.pause();
+        state.audioInitialized = true;
+        updateAudioUI(false);
+        showToast("Musik latar dijeda");
+      } else {
+        state.userPausedAudio = false;
+        attemptPlayBacksound(true);
+      }
+    }
+
+    /**
+     * ==========================================================================
+     * ANIMASI LOADING AWAL (~2,2 DETIK)
+     * ==========================================================================
+     */
+    function startLoadingSequence() {
+      const durationMs = 2200;
+      const startTime = performance.now();
+
+      const statusMilestones = [
+        { at: 0, text: "Menyiapkan Galeri Karya..." },
+        { at: 35, text: "Memuat Koleksi Kain Perca..." },
+        { at: 72, text: "Menyusun Ruang Pamer Royal..." },
+        { at: 95, text: "Selamat Datang di PERMATA" }
+      ];
+
+      function updateProgress(now) {
+        const elapsed = now - startTime;
+        const rawProgress = Math.min(elapsed / durationMs, 1);
+        const easedProgress = 1 - Math.pow(1 - rawProgress, 2.2);
+        const percent = Math.round(easedProgress * 100);
+
+        dom.loadingBar.style.width = `${percent}%`;
+        dom.loadingPercent.textContent = `${percent}%`;
+
+        for (let i = statusMilestones.length - 1; i >= 0; i--) {
+          if (percent >= statusMilestones[i].at) {
+            dom.loadingStatus.textContent = statusMilestones[i].text;
+            break;
+          }
+        }
+
+        if (rawProgress < 1) {
+          requestAnimationFrame(updateProgress);
+        } else {
+          finishLoadingScreen();
+        }
+      }
+
+      requestAnimationFrame(updateProgress);
+    }
+
+    function finishLoadingScreen() {
+      setTimeout(() => {
+        dom.loadingScreen.classList.add("opacity-0", "pointer-events-none");
+        setTimeout(() => {
+          dom.loadingScreen.style.display = "none";
+        }, 700);
+
+        attemptPlayBacksound(false);
+      }, 150);
+    }
+
+    /**
+     * ==========================================================================
+     * RENDER MENU UTAMA: 3 TOMBOL KARYA & TEAM 4
+     * ==========================================================================
+     */
+    function renderHomeMenu() {
+      // 1. Render 3 Tombol Produk dengan Kartu Putih Mutiara & Kontras Tajam
+      dom.productButtonsGrid.innerHTML = PRODUCTS_DATA.map((product) => {
+        return `
+          <button
+            type="button"
+            onclick="openProductDetail('${product.id}')"
+            aria-label="Buka detail ${product.name} - ${product.theme}"
+            class="pearl-card product-btn-card group flex flex-col justify-between rounded-3xl p-4 text-left sm:p-5 focus:outline-none focus:ring-2 focus:ring-[#0D1B3E]">
+
+            <div>
+              <!-- Bingkai Foto Produk -->
+              <div class="relative mb-5 aspect-[4/3] w-full overflow-hidden rounded-2xl border border-[#E6C875] bg-[#FAF7F0]">
+                <img
+                  src="${product.photoFile}"
+                  alt="${product.name}"
+                  loading="lazy"
+                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');"
+                  class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+                ${getRoyalFallbackSvg(product)}
+
+                <!-- Lencana Nomor Karya (Deep Royal Navy + Champagne Gold) -->
+                <span class="absolute left-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#FCD34D] bg-[#0D1B3E] font-cinzel text-xs font-bold text-[#FCD34D] shadow-md">
+                  ${product.number}
+                </span>
+
+                <!-- Label Nama File Foto -->
+                <span class="absolute bottom-2.5 right-3 rounded-lg border border-[#E6C875] bg-white/95 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-[#0D1B3E] shadow-sm">
+                  ${product.photoFile}
+                </span>
+              </div>
+
+              <!-- Label Tema P5 (Antique Royal Gold di atas latar krem emas lembut) -->
+              <div class="mb-2.5 inline-flex items-center gap-1.5 rounded-full border border-[#E6C875] bg-[#FDF6E3] px-3 py-1">
+                <span class="h-1.5 w-1.5 rounded-full bg-[#C59B27]"></span>
+                <span class="text-[11px] font-bold tracking-wide text-[#8A6212]">
+                  ${product.theme}
+                </span>
+              </div>
+
+              <!-- Nama Karya (Deep Royal Navy) -->
+              <h3 class="font-cinzel text-xl font-extrabold text-[#0D1B3E] transition-colors group-hover:text-[#8A6212] sm:text-2xl">
+                ${product.name}
+              </h3>
+
+              <!-- Ringkasan Singkat (Charcoal Gelap) -->
+              <p class="mt-2 line-clamp-2 text-xs leading-relaxed font-medium text-[#334155] sm:text-sm">
+                ${product.tagline}
+              </p>
+            </div>
+
+            <!-- Bar Aksi di Bagian Bawah Tombol -->
+            <div class="mt-5 flex items-center justify-between border-t border-[#EFE8D8] pt-3.5 text-xs font-bold text-[#0D1B3E]">
+              <span class="tracking-wide uppercase group-hover:text-[#8A6212]">Lihat Detail Karya</span>
+              <span class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#C59B27] bg-[#FDF6E3] text-[#0D1B3E] transition-all duration-300 group-hover:translate-x-1 group-hover:bg-[#0D1B3E] group-hover:text-[#FCD34D]">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </span>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      // 2. Render 7 Anggota Team 4 (Simetris: 4 di baris atas, 3 terpusat di baris bawah pada desktop)
+      dom.teamMembersList.innerHTML = TEAM_4_MEMBERS.map((member, index) => {
+        const num = String(index + 1).padStart(2, "0");
+        return `
+          <div class="flex w-full items-center gap-3 rounded-2xl border border-[#E6C875] bg-[#FAF7F0] px-4 py-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#C59B27] hover:bg-[#FDF6E3] sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#C59B27] bg-[#0D1B3E] font-cinzel text-[11px] font-bold text-[#FCD34D]">
+              ${num}
+            </span>
+            <span class="text-xs font-bold leading-snug text-[#0D1B3E] sm:text-sm">
+              ${member}
+            </span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    /**
+     * ==========================================================================
+     * NAVIGASI SPA: BUKA HALAMAN DETAIL PRODUK & KEMBALI KE MENU UTAMA
+     * ==========================================================================
+     */
+    function openProductDetail(productId, options = { updateUrl: true, smoothScroll: true }) {
+      const product = PRODUCTS_DATA.find((item) => item.id === productId);
+      if (!product) return;
+
+      state.currentView = "detail";
+      state.activeProductId = productId;
+
+      if (options.updateUrl !== false) {
+        syncUrlWithProduct(productId);
+      }
+
+      const currentIndex = PRODUCTS_DATA.findIndex((item) => item.id === productId);
+      const nextProduct = PRODUCTS_DATA[(currentIndex + 1) % PRODUCTS_DATA.length];
+
+      // Tab navigasi cepat antar-karya
+      const quickTabsHtml = PRODUCTS_DATA.map((item) => {
+        const isActive = item.id === product.id;
+        return `
+          <button
+            type="button"
+            onclick="openProductDetail('${item.id}')"
+            class="min-h-[44px] rounded-full px-4 py-2 text-xs font-bold transition-all ${
+              isActive
+                ? "border border-[#C59B27] bg-[#0D1B3E] text-[#FCD34D] shadow-md"
+                : "border border-[#E6C875] bg-white text-[#0D1B3E] hover:border-[#C59B27] hover:bg-[#FDF6E3]"
+            }">
+            ${item.number}. ${item.name}
+          </button>
+        `;
+      }).join("");
+
+      dom.detailView.innerHTML = `
+        <!-- TOP BAR NAVIGASI DETAIL -->
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <button
+            type="button"
+            onclick="backToHome()"
+            class="pearl-card inline-flex min-h-[46px] w-fit items-center gap-2.5 rounded-full px-5 py-2.5 text-xs font-bold text-[#0D1B3E] hover:border-[#C59B27] hover:bg-[#FDF6E3] focus:outline-none focus:ring-2 focus:ring-[#0D1B3E]">
+            <svg class="h-4 w-4 text-[#8A6212]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5" />
+              <path d="m12 19-7-7 7-7" />
+            </svg>
+            <span>Kembali ke Menu Utama</span>
+          </button>
+
+          <!-- Tab Cepat Antar-Karya -->
+          <div class="flex flex-wrap items-center gap-2">
+            ${quickTabsHtml}
+          </div>
+        </div>
+
+        <!-- HERO PRODUK (KARTU PUTIH MUTIARA SOLID) -->
+        <div class="pearl-card relative overflow-hidden rounded-3xl p-5 sm:p-8">
+          <div class="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#0D1B3E] via-[#C59B27] to-[#0D1B3E]"></div>
+
+          <div class="grid grid-cols-1 items-center gap-7 lg:grid-cols-12">
+            <!-- Foto Produk dalam Bingkai Royal Gold -->
+            <div class="lg:col-span-5">
+              <div class="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border-2 border-[#C59B27] bg-[#FAF7F0] shadow-lg">
+                <img
+                  src="${product.photoFile}"
+                  alt="${product.name}"
+                  onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');"
+                  class="h-full w-full object-cover"
+                />
+                ${getRoyalFallbackSvg(product)}
+                <span class="absolute bottom-3 right-3 rounded-lg border border-[#E6C875] bg-white/95 px-2.5 py-1 text-[11px] font-bold text-[#0D1B3E] shadow-sm">
+                  Foto: ${product.photoFile}
+                </span>
+              </div>
+            </div>
+
+            <!-- Identitas & Ringkasan Utama Karya -->
+            <div class="lg:col-span-7">
+              <div class="mb-3 inline-flex flex-wrap items-center gap-2 rounded-full border border-[#E6C875] bg-[#FDF6E3] px-3.5 py-1.5">
+                <span class="font-cinzel text-xs font-extrabold text-[#0D1B3E]">KARYA ${product.number}</span>
+                <span class="text-[#C59B27]">•</span>
+                <span class="text-xs font-bold text-[#8A6212]">${product.theme}</span>
+              </div>
+
+              <h1 class="font-cinzel text-3xl font-extrabold leading-tight text-[#0D1B3E] sm:text-4xl lg:text-5xl">
+                ${product.name}
+              </h1>
+
+              <p class="mt-3 text-base font-semibold italic text-[#1E293B] sm:text-lg">
+                "${product.tagline}"
+              </p>
+
+              <!-- 3 Lencana Keunggulan Singkat -->
+              <div class="mt-5 flex flex-wrap gap-2.5">
+                ${product.highlights
+                  .map(
+                    (tag) => `
+                  <span class="inline-flex items-center gap-1.5 rounded-xl border border-[#E6C875] bg-[#FAF7F0] px-3.5 py-1.5 text-xs font-bold text-[#0D1B3E]">
+                    <svg class="h-3.5 w-3.5 text-[#C59B27]" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L14.8 8.8L22 9.3L16.5 14L18.2 21L12 17.3L5.8 21L7.5 14L2 9.3L9.2 8.8L12 2Z" />
+                    </svg>
+                    ${tag}
+                  </span>
+                `
+                  )
+                  .join("")}
+              </div>
+
+              <!-- Tombol Salin Link QR Khusus Karya Ini -->
+              <div class="mt-6 flex flex-wrap items-center gap-3 border-t border-[#EFE8D8] pt-5">
+                <button
+                  type="button"
+                  onclick="copyProductQrLink('${product.id}')"
+                  class="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#C59B27] bg-[#0D1B3E] px-4 py-2 text-xs font-bold text-white shadow-md transition-all hover:bg-[#152857] focus:outline-none focus:ring-2 focus:ring-[#C59B27]">
+                  <svg class="h-4 w-4 text-[#FCD34D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                    <path d="M14 14h3v3h-3z" />
+                    <path d="M17 17h4v4h-4z" />
+                    <path d="M14 20h1" />
+                    <path d="M20 14h1" />
+                  </svg>
+                  <span>Salin Link QR Karya Ini</span>
+                </button>
+                <span class="text-xs font-medium text-[#334155]">
+                  Link langsung: <code class="rounded border border-[#E6C875] bg-[#FDF6E3] px-2 py-0.5 font-bold text-[#8A6212]">#${product.id}</code>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 BAGIAN INFORMASI LENGKAP PRODUK (KARTU PUTIH MUTIARA SOLID) -->
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+          <!-- BAGIAN 1: INFORMASI PRODUK -->
+          <article class="pearl-card rounded-3xl p-6 sm:p-7">
+            <div class="mb-4 flex items-center gap-3">
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#C59B27] bg-[#0D1B3E] text-[#FCD34D]">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4" />
+                  <path d="M12 8h.01" />
+                </svg>
+              </div>
+              <div>
+                <span class="font-cinzel text-[11px] font-bold tracking-[0.2em] text-[#8A6212] uppercase">Bagian 01</span>
+                <h2 class="font-cinzel text-xl font-extrabold text-[#0D1B3E] sm:text-2xl">
+                  Informasi Produk
+                </h2>
+              </div>
+            </div>
+
+            <div class="space-y-3.5 text-sm leading-relaxed text-[#334155] sm:text-[15px]">
+              <div class="rounded-2xl border border-[#E6C875] bg-[#FDF6E3] p-3.5">
+                <p class="text-xs font-bold text-[#8A6212]">Nama Karya &amp; Kategori Tema</p>
+                <p class="mt-0.5 font-bold text-[#0D1B3E]">${product.name} — ${product.theme}</p>
+              </div>
+              <p class="font-medium text-[#1F2937]">${product.infoProduk.ringkasan}</p>
+              <p class="text-[#334155]">${product.infoProduk.konsep}</p>
+            </div>
+          </article>
+
+          <!-- BAGIAN 2: BAHAN DAN ALAT -->
+          <article class="pearl-card rounded-3xl p-6 sm:p-7">
+            <div class="mb-4 flex items-center gap-3">
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#C59B27] bg-[#0D1B3E] text-[#FCD34D]">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="6" cy="6" r="3" />
+                  <circle cx="6" cy="18" r="3" />
+                  <line x1="20" y1="4" x2="8.12" y2="15.88" />
+                  <line x1="14.47" y1="14.48" x2="20" y2="20" />
+                  <line x1="8.12" y1="8.12" x2="12" y2="12" />
+                </svg>
+              </div>
+              <div>
+                <span class="font-cinzel text-[11px] font-bold tracking-[0.2em] text-[#8A6212] uppercase">Bagian 02</span>
+                <h2 class="font-cinzel text-xl font-extrabold text-[#0D1B3E] sm:text-2xl">
+                  Bahan dan Alat
+                </h2>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <!-- Daftar Bahan -->
+              <div class="rounded-2xl border border-[#E6C875] bg-[#FAF7F0] p-4">
+                <h3 class="mb-2.5 font-cinzel text-xs font-extrabold tracking-wider text-[#0D1B3E] uppercase">
+                  Bahan Kain Perca &amp; Pendukung
+                </h3>
+                <ul class="space-y-2 text-xs leading-relaxed font-medium text-[#1F2937] sm:text-sm">
+                  ${product.bahanDanAlat.bahan
+                    .map(
+                      (item) => `
+                    <li class="flex items-start gap-2">
+                      <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#C59B27]"></span>
+                      <span>${item}</span>
+                    </li>
+                  `
+                    )
+                    .join("")}
+                </ul>
+              </div>
+
+              <!-- Daftar Alat -->
+              <div class="rounded-2xl border border-[#E6C875] bg-[#FAF7F0] p-4">
+                <h3 class="mb-2.5 font-cinzel text-xs font-extrabold tracking-wider text-[#0D1B3E] uppercase">
+                  Alat yang Digunakan
+                </h3>
+                <ul class="space-y-2 text-xs leading-relaxed font-medium text-[#1F2937] sm:text-sm">
+                  ${product.bahanDanAlat.alat
+                    .map(
+                      (item) => `
+                    <li class="flex items-start gap-2">
+                      <span class="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#0D1B3E]"></span>
+                      <span>${item}</span>
+                    </li>
+                  `
+                    )
+                    .join("")}
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <!-- BAGIAN 3: PROSES PEMBUATAN -->
+          <article class="pearl-card rounded-3xl p-6 sm:p-7">
+            <div class="mb-4 flex items-center gap-3">
+              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#C59B27] bg-[#0D1B3E] text-[#FCD34D]">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+              </div>
+              <div>
+                <span class="font-cinzel text-[11px] font-bold tracking-[0.2em] text-[#8A6212] uppercase">Bagian 03</span>
+                <h2 class="font-cinzel text-xl font-extrabold text-[#0D1B3E] sm:text-2xl">
+                  Proses Pembuatan
+                </h2>
+              </div>
+            </div>
+
+            <ol class="space-y-3">
+              ${product.prosesPembuatan
+                .map(
+                  (step, idx) => `
+                <li class="flex items-start gap-3 rounded-2xl border border-[#EFE8D8] bg-[#FAF7F0] p-3.5">
+                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#C59B27] bg-[#0D1B3E] font-cinzel text-xs font-bold text-[#FCD34D]">
+                    ${idx + 1}
+                  </span>
+                  <p class="text-xs leading-relaxed font-medium text-[#1F2937] sm:text-sm">${step}</p>
+                </li>
+              `
+                )
+                .join("")}
+            </ol>
+          </article>
+
+          <!-- BAGIAN 4: FUNGSI DAN KEUNIKAN KARYA -->
+          <article class="pearl-card flex flex-col justify-between rounded-3xl p-6 sm:p-7">
+            <div>
+              <div class="mb-4 flex items-center gap-3">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#C59B27] bg-[#0D1B3E] text-[#FCD34D]">
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                </div>
+                <div>
+                  <span class="font-cinzel text-[11px] font-bold tracking-[0.2em] text-[#8A6212] uppercase">Bagian 04</span>
+                  <h2 class="font-cinzel text-xl font-extrabold text-[#0D1B3E] sm:text-2xl">
+                    Fungsi dan Keunikan Karya
+                  </h2>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div class="rounded-2xl border border-[#EFE8D8] bg-[#FAF7F0] p-4">
+                  <h3 class="mb-1.5 font-cinzel text-xs font-extrabold tracking-wider text-[#0D1B3E] uppercase">
+                    Kegunaan &amp; Manfaat Praktis
+                  </h3>
+                  <p class="text-xs leading-relaxed font-medium text-[#1F2937] sm:text-sm">
+                    ${product.fungsiDanKeunikan.fungsi}
+                  </p>
+                </div>
+
+                <div class="rounded-2xl border border-[#E6C875] bg-[#FDF6E3] p-4">
+                  <h3 class="mb-1.5 font-cinzel text-xs font-extrabold tracking-wider text-[#8A6212] uppercase">
+                    Keunggulan &amp; Ciri Khas Karya
+                  </h3>
+                  <p class="text-xs leading-relaxed font-medium text-[#1F2937] sm:text-sm">
+                    ${product.fungsiDanKeunikan.keunikan}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kredit Team 4 di Bawah Kartu -->
+            <div class="mt-6 flex items-center justify-between border-t border-[#EFE8D8] pt-4 text-xs">
+              <span class="font-medium text-[#334155]">Karya Projek P5 • PERMATA</span>
+              <span class="font-bold text-[#0D1B3E]">Oleh Team 4</span>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- NAVIGASI BAWAH: KEMBALI ATAU LANJUT KE KARYA BERIKUTNYA -->
+        <div class="mt-2 flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <button
+            type="button"
+            onclick="backToHome()"
+            class="pearl-card inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl px-6 py-3 text-xs font-bold text-[#0D1B3E] hover:border-[#C59B27] hover:bg-[#FDF6E3] sm:w-auto">
+            <span>← Pilih Karya Lainnya</span>
+          </button>
+
+          <button
+            type="button"
+            onclick="openProductDetail('${nextProduct.id}')"
+            class="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl border border-[#C59B27] bg-[#0D1B3E] px-6 py-3 text-xs font-bold text-white shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-[#152857] sm:w-auto">
+            <span>Karya Berikutnya: <span class="text-[#FCD34D]">${nextProduct.name}</span> →</span>
+          </button>
+        </div>
+      `;
+
+      dom.homeView.classList.add("hidden");
+      dom.detailView.classList.remove("hidden");
+      dom.detailView.classList.remove("view-transition");
+      void dom.detailView.offsetWidth;
+      dom.detailView.classList.add("view-transition", "flex");
+
+      if (options.smoothScroll !== false) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        window.scrollTo(0, 0);
+      }
+    }
+
+    function backToHome(options = { updateUrl: true }) {
+      state.currentView = "home";
+      state.activeProductId = null;
+
+      if (options.updateUrl !== false) {
+        clearUrlProduct();
+      }
+
+      dom.detailView.classList.add("hidden");
+      dom.detailView.classList.remove("flex");
+      dom.homeView.classList.remove("hidden");
+      dom.homeView.classList.remove("view-transition");
+      void dom.homeView.offsetWidth;
+      dom.homeView.classList.add("view-transition");
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function handleUrlChange() {
+      const targetId = getDeepLinkedProductId();
+      if (targetId && targetId !== state.activeProductId) {
+        openProductDetail(targetId, { updateUrl: false, smoothScroll: true });
+      } else if (!targetId && state.currentView === "detail") {
+        backToHome({ updateUrl: false });
+      }
+    }
+
+    /**
+     * ==========================================================================
+     * INISIALISASI SAAT HALAMAN SELESAI DIMUAT
+     * ==========================================================================
+     */
+    window.addEventListener("DOMContentLoaded", () => {
+      renderHomeMenu();
+      setupBacksound();
+
+      // Jika link berasal dari QR Code (#bandana / ?karya=bandana, dll.),
+      // siapkan halaman detail produk tersebut di balik layar loading
+      const initialProductId = getDeepLinkedProductId();
+      if (initialProductId) {
+        openProductDetail(initialProductId, { updateUrl: false, smoothScroll: false });
+      }
+
+      window.addEventListener("hashchange", handleUrlChange);
+      window.addEventListener("popstate", handleUrlChange);
+
+      startLoadingSequence();
+    });
+  </script>
+</body>
+</html>
