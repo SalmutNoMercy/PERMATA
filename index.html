@@ -62,16 +62,29 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    html {
+      background-color: #FAF7F0;
+      overscroll-behavior-y: none;
+    }
+
     body {
       background: linear-gradient(165deg, #FAF7F0 0%, #F7F3EA 52%, #EFE8D8 100%);
       color: #1F2937;
       font-family: 'Plus Jakarta Sans', sans-serif;
       min-height: 100dvh;
       overflow-x: hidden;
-      padding-top: var(--safe-top);
+      overscroll-behavior-y: none;
       padding-bottom: var(--safe-bottom);
       padding-left: var(--safe-left);
       padding-right: var(--safe-right);
+    }
+
+    /* Mencegah bug clipping WebKit/iOS pada elemen melayang saat scroll mentok ke atas */
+    .fixed-royal-control {
+      transform: translate3d(0, 0, 0);
+      -webkit-transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     /* Ornamen pola royal ultra-tipis di lapisan belakang agar tidak mengganggu keterbacaan teks */
@@ -185,6 +198,57 @@
       100% { height: 15px; }
     }
 
+    /* ==========================================================================
+       ANIMASI INTERAKTIF SENTUHAN & GESER LAYAR (ROYAL RIPPLE & GOLD SPARKLE)
+       ========================================================================== */
+    .royal-touch-ripple {
+      position: fixed;
+      width: 18px;
+      height: 18px;
+      margin-left: -9px;
+      margin-top: -9px;
+      border-radius: 9999px;
+      border: 2px solid #C59B27;
+      background: radial-gradient(circle, rgba(252, 211, 77, 0.35) 0%, rgba(197, 155, 39, 0) 72%);
+      box-shadow: 0 0 12px rgba(197, 155, 39, 0.45);
+      pointer-events: none;
+      will-change: transform, opacity;
+      animation: royalRippleExpand 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes royalRippleExpand {
+      0% {
+        transform: scale(0.35);
+        opacity: 0.95;
+      }
+      100% {
+        transform: scale(4.8);
+        opacity: 0;
+      }
+    }
+
+    .royal-sparkle-particle {
+      position: fixed;
+      pointer-events: none;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 0 4px rgba(197, 155, 39, 0.55));
+      animation: royalSparkleFloat var(--sparkle-duration, 0.8s) cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes royalSparkleFloat {
+      0% {
+        transform: translate3d(0, 0, 0) scale(0.4) rotate(0deg);
+        opacity: 1;
+      }
+      60% {
+        opacity: 0.95;
+      }
+      100% {
+        transform: translate3d(var(--dx, 0px), var(--dy, -28px), 0) scale(1.15) rotate(var(--rot, 90deg));
+        opacity: 0;
+      }
+    }
+
     /* Custom Scrollbar bernuansa Royal Ivory & Navy */
     ::-webkit-scrollbar {
       width: 8px;
@@ -209,6 +273,9 @@
 
   <!-- Pendaran cahaya hangat lembut di sudut atas layar -->
   <div class="pointer-events-none fixed inset-x-0 top-0 z-0 h-80 bg-gradient-to-b from-[#EFE5CF]/70 to-transparent" aria-hidden="true"></div>
+
+  <!-- Lapisan Efek Animasi Sentuhan & Geser Layar (Non-blocking 60fps) -->
+  <div id="royal-touch-fx-layer" class="pointer-events-none fixed inset-0 z-40 overflow-hidden" aria-hidden="true"></div>
 
   <!-- ========================================================================
        ELEMEN AUDIO BACKSOUND
@@ -270,10 +337,51 @@
   </div>
 
   <!-- ========================================================================
+       LOGO SEKOLAH MELAYANG (POJOK KIRI ATAS)
+       Sumber file diatur melalui konstanta SCHOOL_LOGO_FILE ("logo-sekolah.png")
+       ======================================================================== -->
+  <div class="fixed-royal-control fixed left-4 z-40 sm:left-6" style="top: calc(1rem + var(--safe-top));">
+    <button id="school-logo-btn"
+            type="button"
+            title="Logo Sekolah — Kembali ke Beranda PERMATA"
+            aria-label="Logo Sekolah — Kembali ke Beranda PERMATA"
+            class="group flex min-h-[46px] items-center gap-2.5 rounded-full border border-[#C59B27] bg-white p-1.5 pr-1.5 shadow-lg transition-colors hover:border-[#0D1B3E] hover:bg-[#FDF6E3] focus:outline-none focus:ring-2 focus:ring-[#C59B27] sm:pr-4">
+      <!-- Bingkai Lingkaran Logo Sekolah -->
+      <div class="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#C59B27] bg-[#0D1B3E] shadow-inner">
+        <img
+          id="school-logo-img"
+          src="logo-sekolah.png"
+          alt="Logo Sekolah"
+          onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden'); this.nextElementSibling.classList.add('flex');"
+          class="h-full w-full object-contain p-0.5"
+        />
+        <!-- Fallback Emblem Sekolah Otomatis jika file logo-sekolah.png belum dimasukkan -->
+        <div class="hidden h-full w-full items-center justify-center text-[#FCD34D]" aria-hidden="true">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L4 5.5V11.5C4 16.8 7.4 21.6 12 23C16.6 21.6 20 16.8 20 11.5V5.5L12 2Z" />
+            <path d="M9 11L12 8.5L15 11" />
+            <path d="M12 8.5V15.5" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Label Identitas Ringkas di Desktop/Tablet -->
+      <div class="hidden flex-col text-left sm:flex">
+        <span class="font-cinzel text-[11px] font-extrabold leading-tight tracking-wider text-[#0D1B3E] group-hover:text-[#8A6212]">
+          PERMATA P5
+        </span>
+        <span class="text-[10px] font-semibold leading-tight text-[#8A6212]">
+          Logo Sekolah
+        </span>
+      </div>
+    </button>
+  </div>
+
+  <!-- ========================================================================
        TOMBOL KONTROL AUDIO BACKSOUND MELAYANG (POJOK KANAN ATAS)
        Latar Deep Royal Navy dengan teks Putih & Champagne Gold agar selalu kontras
        ======================================================================== -->
-  <div class="fixed right-4 top-4 z-40 sm:right-6 sm:top-6" style="margin-top: var(--safe-top);">
+  <div class="fixed-royal-control fixed right-4 z-40 sm:right-6" style="top: calc(1rem + var(--safe-top));">
     <button id="audio-toggle-btn"
             type="button"
             aria-label="Putar atau Jeda Musik Latar"
@@ -305,7 +413,7 @@
     <!-- ======================================================================
          2. HALAMAN MENU UTAMA (PILIHAN 3 KARYA & TEAM 4)
          ====================================================================== -->
-    <section id="home-view" class="view-transition flex flex-col gap-10 pt-8 sm:gap-12 sm:pt-10">
+    <section id="home-view" class="view-transition flex flex-col gap-10 pt-14 sm:gap-12 sm:pt-12">
 
       <!-- HEADER ROYAL ELEGANT (KONTRAS TINGGI DI ATAS ROYAL IVORY) -->
       <header class="mx-auto max-w-3xl text-center">
@@ -382,7 +490,7 @@
     <!-- ======================================================================
          3. HALAMAN DETAIL INFORMASI PRODUK (SPA VIEW)
          ====================================================================== -->
-    <section id="detail-view" class="hidden flex-col gap-7 pt-8 sm:gap-8 sm:pt-10" aria-live="polite">
+    <section id="detail-view" class="hidden flex-col gap-7 pt-14 sm:gap-8 sm:pt-12" aria-live="polite">
       <!-- Konten detail produk yang dipilih dirender oleh JavaScript -->
     </section>
 
@@ -401,20 +509,21 @@
   </main>
 
   <!-- ========================================================================
-       JAVASCRIPT MURNI (VANILLA JAVASCRIPT) — LOGIKA, DATA, AUDIO & QR ROUTING
+       JAVASCRIPT MURNI (VANILLA JAVASCRIPT) — LOGIKA, DATA, AUDIO, EFEK SENTUH & QR
        ======================================================================== -->
   <script>
     /**
      * ==========================================================================
      * KONFIGURASI ASET MEDIA (SILAKAN SESUAIKAN NAMA FILE JIKA DIPERLUKAN)
      * ==========================================================================
-     * 1. Letakkan file musik latar di folder yang sama dengan file HTML ini
-     *    dengan nama "backsound.mp3".
-     * 2. Letakkan ke-3 foto karya Anda di folder yang sama dengan nama:
+     * 1. Logo Sekolah (Pojok Kiri Atas): "logo-sekolah.png"
+     * 2. Musik Backsound (Otomatis): "backsound.mp3"
+     * 3. Foto ke-3 Karya:
      *    - "foto-bandana.jpg"
      *    - "foto-tatakan-gelas.jpg"
      *    - "foto-gantungan-bintang.jpg"
      */
+    const SCHOOL_LOGO_FILE = "logo-sekolah.png";
     const BACKSOUND_FILE = "backsound.mp3";
 
     const PHOTO_FILES = {
@@ -593,6 +702,9 @@
     };
 
     const dom = {
+      schoolLogoBtn: document.getElementById("school-logo-btn"),
+      schoolLogoImg: document.getElementById("school-logo-img"),
+      touchFxLayer: document.getElementById("royal-touch-fx-layer"),
       bgMusic: document.getElementById("bg-music"),
       audioToggleBtn: document.getElementById("audio-toggle-btn"),
       audioEq: document.getElementById("audio-eq"),
@@ -608,6 +720,243 @@
       royalToast: document.getElementById("royal-toast"),
       royalToastText: document.getElementById("royal-toast-text")
     };
+
+    /**
+     * ==========================================================================
+     * SETUP LOGO SEKOLAH (POJOK KIRI ATAS)
+     * ==========================================================================
+     */
+    function setupSchoolLogo() {
+      if (dom.schoolLogoImg) {
+        dom.schoolLogoImg.src = SCHOOL_LOGO_FILE;
+      }
+      if (dom.schoolLogoBtn) {
+        dom.schoolLogoBtn.addEventListener("click", () => {
+          if (state.currentView === "detail") {
+            backToHome();
+          } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            showToast(`Slot Logo Sekolah siap: ${SCHOOL_LOGO_FILE}`);
+          }
+        });
+      }
+    }
+
+    /**
+     * ==========================================================================
+     * ANIMASI INTERAKTIF SAAT MENYENTUH, MENGGESER & SCROLL CEPAT (60FPS GPU)
+     * ==========================================================================
+     */
+    function setupInteractiveTouchEffects() {
+      if (!dom.touchFxLayer) return;
+
+      const MAX_ACTIVE_PARTICLES = 64;
+      let lastTrailTime = 0;
+      let lastScrollFxTime = 0;
+      let isPointerDown = false;
+      let lastX = window.innerWidth * 0.5;
+      let lastY = window.innerHeight * 0.5;
+      let prevMoveX = null;
+      let prevMoveY = null;
+      let lastScrollY = window.scrollY || 0;
+
+      const sparkleColors = ["#C59B27", "#FCD34D", "#8A6212", "#0D1B3E", "#EAB308"];
+
+      function trimOldParticles() {
+        while (dom.touchFxLayer.childElementCount > MAX_ACTIVE_PARTICLES) {
+          dom.touchFxLayer.removeChild(dom.touchFxLayer.firstElementChild);
+        }
+      }
+
+      function spawnRipple(x, y) {
+        const ripple = document.createElement("span");
+        ripple.className = "royal-touch-ripple";
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        dom.touchFxLayer.appendChild(ripple);
+        trimOldParticles();
+
+        ripple.addEventListener("animationend", () => ripple.remove(), { once: true });
+        setTimeout(() => {
+          if (ripple.parentNode) ripple.remove();
+        }, 850);
+      }
+
+      function spawnSparkle(x, y, isBurst = false, biasDy = 0) {
+        const particle = document.createElement("span");
+        particle.className = "royal-sparkle-particle";
+
+        const size = isBurst ? 8 + Math.random() * 8 : 6 + Math.random() * 7;
+        const color = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+        const angle = Math.random() * Math.PI * 2;
+        const distance = isBurst ? 22 + Math.random() * 34 : 10 + Math.random() * 24;
+        const dx = Math.cos(angle) * distance;
+        const dy = Math.sin(angle) * distance - (isBurst ? 10 : 12) + biasDy;
+        const rot = Math.round((Math.random() - 0.5) * 220);
+        const duration = isBurst ? 0.72 + Math.random() * 0.25 : 0.62 + Math.random() * 0.25;
+
+        particle.style.left = `${x - size / 2}px`;
+        particle.style.top = `${y - size / 2}px`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.setProperty("--dx", `${dx.toFixed(1)}px`);
+        particle.style.setProperty("--dy", `${dy.toFixed(1)}px`);
+        particle.style.setProperty("--rot", `${rot}deg`);
+        particle.style.setProperty("--sparkle-duration", `${duration.toFixed(2)}s`);
+
+        // Bentuk kilau berlian empat sudut (4-point Royal Star)
+        particle.innerHTML = `
+          <svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="${color}">
+            <path d="M12 0L14.8 9.2L24 12L14.8 14.8L12 24L9.2 14.8L0 12L9.2 9.2L12 0Z"/>
+          </svg>
+        `;
+
+        dom.touchFxLayer.appendChild(particle);
+        trimOldParticles();
+
+        particle.addEventListener("animationend", () => particle.remove(), { once: true });
+        setTimeout(() => {
+          if (particle.parentNode) particle.remove();
+        }, 1050);
+      }
+
+      // Mengisi jejak kilau di sepanjang lintasan usapan cepat agar tidak terputus
+      function spawnTrailAlongSegment(x1, y1, x2, y2) {
+        if (x1 === null || y1 === null) {
+          spawnSparkle(x2, y2, false);
+          return;
+        }
+        const dist = Math.hypot(x2 - x1, y2 - y1);
+        const steps = Math.min(6, Math.max(1, Math.floor(dist / 24)));
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps;
+          const ix = x1 + (x2 - x1) * t + (Math.random() - 0.5) * 8;
+          const iy = y1 + (y2 - y1) * t + (Math.random() - 0.5) * 8;
+          spawnSparkle(ix, iy, false);
+        }
+      }
+
+      // 1. Saat layar disentuh / diklik (Tap / Press)
+      document.addEventListener(
+        "pointerdown",
+        (e) => {
+          isPointerDown = true;
+          lastX = e.clientX;
+          lastY = e.clientY;
+          prevMoveX = lastX;
+          prevMoveY = lastY;
+
+          spawnRipple(lastX, lastY);
+          for (let i = 0; i < 6; i++) {
+            spawnSparkle(lastX, lastY, true);
+          }
+        },
+        { passive: true }
+      );
+
+      document.addEventListener(
+        "pointerup",
+        () => {
+          isPointerDown = false;
+          prevMoveX = null;
+          prevMoveY = null;
+        },
+        { passive: true }
+      );
+
+      // 2. Saat kursor atau sentuhan bergeser (Mouse Move / Drag)
+      document.addEventListener(
+        "pointermove",
+        (e) => {
+          lastX = e.clientX;
+          lastY = e.clientY;
+
+          const now = performance.now();
+          const interval = isPointerDown ? 20 : 50;
+          if (now - lastTrailTime < interval) return;
+          lastTrailTime = now;
+
+          if (isPointerDown) {
+            spawnTrailAlongSegment(prevMoveX, prevMoveY, lastX, lastY);
+            prevMoveX = lastX;
+            prevMoveY = lastY;
+          } else if (e.pointerType === "mouse") {
+            spawnSparkle(lastX, lastY, false);
+          }
+        },
+        { passive: true }
+      );
+
+      // 3. Pelacakan khusus sentuhan jari di Android & iOS (tetap aktif meski pointercancel terjadi saat scroll)
+      document.addEventListener(
+        "touchstart",
+        (e) => {
+          const touch = e.touches[0];
+          if (!touch) return;
+          lastX = touch.clientX;
+          lastY = touch.clientY;
+          prevMoveX = lastX;
+          prevMoveY = lastY;
+        },
+        { passive: true }
+      );
+
+      document.addEventListener(
+        "touchmove",
+        (e) => {
+          const touch = e.touches[0];
+          if (!touch) return;
+          lastX = touch.clientX;
+          lastY = touch.clientY;
+
+          const now = performance.now();
+          if (now - lastTrailTime < 18) return;
+          lastTrailTime = now;
+
+          spawnTrailAlongSegment(prevMoveX, prevMoveY, lastX, lastY);
+          prevMoveX = lastX;
+          prevMoveY = lastY;
+        },
+        { passive: true }
+      );
+
+      document.addEventListener(
+        "touchend",
+        () => {
+          prevMoveX = null;
+          prevMoveY = null;
+        },
+        { passive: true }
+      );
+
+      // 4. Efek kilau otomatis saat halaman di-scroll cepat (termasuk momentum/inertia scroll)
+      window.addEventListener(
+        "scroll",
+        () => {
+          const currentScrollY = window.scrollY || 0;
+          const deltaY = currentScrollY - lastScrollY;
+          lastScrollY = currentScrollY;
+
+          if (Math.abs(deltaY) < 2) return;
+
+          const now = performance.now();
+          if (now - lastScrollFxTime < 22) return;
+          lastScrollFxTime = now;
+
+          const clampedBias = Math.max(-36, Math.min(36, -deltaY * 0.35));
+          const burstCount = Math.abs(deltaY) > 35 ? 2 : 1;
+
+          for (let i = 0; i < burstCount; i++) {
+            const offsetX = (Math.random() - 0.5) * 64;
+            const offsetY = (Math.random() - 0.5) * 44;
+            const spawnX = Math.max(16, Math.min(window.innerWidth - 16, lastX + offsetX));
+            const spawnY = Math.max(16, Math.min(window.innerHeight - 16, lastY + offsetY));
+            spawnSparkle(spawnX, spawnY, false, clampedBias);
+          }
+        },
+        { passive: true }
+      );
+    }
 
     /**
      * ==========================================================================
@@ -1362,6 +1711,8 @@
      * ==========================================================================
      */
     window.addEventListener("DOMContentLoaded", () => {
+      setupSchoolLogo();
+      setupInteractiveTouchEffects();
       renderHomeMenu();
       setupBacksound();
 
